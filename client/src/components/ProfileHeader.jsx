@@ -50,7 +50,14 @@ const ProfileHeader = () => {
                     </Box>
                 </Box>
                 <Box>
-                    <Avatar name="hylianthrone" src="/hylianthrone.png" size={'xl'} />
+                    <Avatar
+                        name="hylianthrone"
+                        src="/hylianthrone.png"
+                        size={{
+                            base: 'md',
+                            md: 'xl',
+                        }}
+                    />
                 </Box>
             </Flex>
 

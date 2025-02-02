@@ -3,13 +3,14 @@ import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } 
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
-
+import PostPage from './pages/PostPage';
 function App() {
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route path="/" element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="/user/:username" element={<ProfilePage />} />
+                <Route path="/user/:username/post/:pid" element={<PostPage />} />
             </Route>
         )
     );
