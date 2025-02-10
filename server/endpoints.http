@@ -1,2 +1,10 @@
-### TEST
-http://localhost:3001/api/users/signup
+### Users - SignUp
+POST http://localhost:3001/api/users/signup
+Content-Type: application/json
+
+{
+    "username": "johdoe",
+    "name": "John Doe",
+    "email": "johndoe@email.com",
+    "password": "xxxxxx"
+}
