@@ -8,3 +8,15 @@ Content-Type: application/json
     "email": "johndoe@email.com",
     "password": "xxxxxx"
 }
+
+### Users - Login
+POST http://localhost:3001/api/users/login
+Content-Type: application/json
+
+{
+    "username": "johdoe",
+    "password": "xxxxxx"
+}
+
+### Users - Logout
+POST http://localhost:3001/api/users/logout
