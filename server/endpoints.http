@@ -15,8 +15,11 @@ Content-Type: application/json
 
 {
     "username": "johdoe",
-    "password": "xxxxxx"
+    "password": "12345"
 }
 
 ### Users - Logout
 POST http://localhost:3001/api/users/logout
+
+### User - Follow / Unfollow
+POST http://localhost:3001/api/users/follow/67aa34f2a5e4719af99ac18b
