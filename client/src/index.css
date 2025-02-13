@@ -13,3 +13,7 @@
 [data-theme='dark'] .icon-container:hover {
     background-color: var(--chakra-colors-gray-700);
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
