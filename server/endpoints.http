@@ -1,3 +1,5 @@
+######## USERS
+
 ### Users - Profile
 GET http://localhost:3001/api/users/profile/johndoe
 
@@ -17,7 +19,7 @@ POST http://localhost:3001/api/users/login
 Content-Type: application/json
 
 {
-    "username": "johndoe",
+    "username": "johndoe2",
     "password": "12345"
 }
 
@@ -25,7 +27,7 @@ Content-Type: application/json
 POST http://localhost:3001/api/users/logout
 
 ### User - Follow / Unfollow
-POST http://localhost:3001/api/users/follow/67aa34f2a5e4719af99ac18b
+POST http://localhost:3001/api/users/follow/67a9e565c91abf0ff292207c
 
 ### User - Update
 POST http://localhost:3001/api/users/update/67a9e565c91abf0ff292207c
@@ -34,6 +36,12 @@ Content-Type: application/json
 {
     "username": "johndoe"
 }
+
+
+######## POSTS
+
+### Posts - Feed
+GET http://localhost:3001/api/posts/feed
 
 ### Posts - Create
 POST http://localhost:3001/api/posts/create
@@ -52,3 +60,11 @@ DELETE http://localhost:3001/api/posts/67acd1298023cf6f67b7fcab
 
 ### Posts - Like / Unlike
 POST http://localhost:3001/api/posts/like/67acd59b1c884aa21ad911ed
+
+### Posts - Comment
+POST http://localhost:3000/api/posts/reply/67acd56647e4bf5bd3581f92
+Content-Type: application/json
+
+{
+	"text": "this is my first comment"
+}
