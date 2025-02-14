@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import PostPage from './pages/PostPage';
 import SignupPage from './pages/SignupPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
     const router = createBrowserRouter(
@@ -12,6 +13,8 @@ function App() {
             <Route path="/" element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="/signup" element={<SignupPage />} />
+                <Route path="/login" element={<LoginPage />} />
+
                 <Route path="/user/:username" element={<ProfilePage />} />
                 <Route path="/user/:username/post/:pid" element={<PostPage />} />
             </Route>
