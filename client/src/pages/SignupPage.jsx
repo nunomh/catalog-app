@@ -2,8 +2,14 @@ import { User, Mail, Lock } from 'lucide-react';
 import Input from '../components/Input';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+import { useColorMode } from '@chakra-ui/react';
+import { useTheme } from '@chakra-ui/react';
+
 const SignUpPage = () => {
+    const { colorMode } = useColorMode();
+    const theme = useTheme();
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -13,10 +19,18 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-            <div className="max-w-md w-full bg-gray-200 bg-opacity-50 rounded-2xl shadow-xl overflow-hidden">
+        <div className="flex items-center justify-center relative overflow-hidden py-12">
+            <div
+                // className={`max-w-md w-full rounded-2xl shadow-xl overflow-hidden ${
+                //     colorMode === 'dark' ? 'bg-gray-dark' : 'bg-white'
+                // }`}
+                className="max-w-md w-full rounded-2xl shadow-xl overflow-hidden"
+                style={{
+                    backgroundColor: colorMode === 'dark' ? theme.colors.gray.dark : theme.colors.white,
+                }}
+            >
                 <div className="p-8">
-                    <h2 className="text-3xl font-bold mb-6 text-center text-gray-600">Create Account</h2>
+                    <h2 className="text-3xl font-bold mb-6 text-center ">Create Account</h2>
                     <form onSubmit={handleSubmit}>
                         <Input
                             icon={User}
@@ -40,7 +54,7 @@ const SignUpPage = () => {
                             onChange={e => setPassword(e.target.value)}
                         />
                         {/* Password Strength Indicator */}
-                        {/* <PasswordStrengthMeter password={password} /> */}
+                        <PasswordStrengthMeter password={password} />
                         <button
                             className="mt-5 w-full py-3 px-4 bg-gray-500 text-white 
 						font-bold rounded-lg shadow-lg hover:bg-gray-600
