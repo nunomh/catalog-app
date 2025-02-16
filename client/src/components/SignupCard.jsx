@@ -7,23 +7,29 @@ import { useColorMode } from '@chakra-ui/react';
 import { useTheme } from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
+import useShowToast from '../hooks/useShowToast';
+import userAtom from '../atoms/userAtom';
 
 const SignUpPage = () => {
     const setAuthScreen = useSetRecoilState(authScreenAtom);
+    const [inputs, setInputs] = useState({
+        username: '',
+        name: '',
+        email: '',
+        password: '',
+    });
+
+    const showToast = useShowToast();
 
     const { colorMode } = useColorMode();
     const theme = useTheme();
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
     const criteria = [
-        { label: 'At least 6 characters', met: password.length >= 6 },
-        { label: 'Contains uppercase letter', met: /[A-Z]/.test(password) },
-        { label: 'Contains lowercase letter', met: /[a-z]/.test(password) },
-        { label: 'Contains a number', met: /\d/.test(password) },
-        { label: 'Contains special character', met: /[^A-Za-z0-9]/.test(password) },
+        { label: 'At least 6 characters', met: inputs.password.length >= 6 },
+        { label: 'Contains uppercase letter', met: /[A-Z]/.test(inputs.password) },
+        { label: 'Contains lowercase letter', met: /[a-z]/.test(inputs.password) },
+        { label: 'Contains a number', met: /\d/.test(inputs.password) },
+        { label: 'Contains special character', met: /[^A-Za-z0-9]/.test(inputs.password) },
     ];
 
     const handleSubmit = e => {
@@ -34,8 +40,33 @@ const SignUpPage = () => {
 
     useEffect(() => {
         const isPasswordValid = criteria.every(criterion => criterion.met);
-        setIsFormValid(name && email && isPasswordValid);
-    }, [name, email, password]);
+        setIsFormValid(inputs.username && inputs.name && inputs.email && isPasswordValid);
+    }, [inputs.username, inputs.name, inputs.email, inputs.password]);
+
+    const setUser = useSetRecoilState(userAtom);
+
+    const handleSignup = async () => {
+        try {
+            const res = await fetch('/api/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inputs),
+            });
+            const data = await res.json();
+            if (data.error) {
+                showToast('Error', data.error, 'error');
+                return;
+            }
+
+            localStorage.setItem('user-catalog', JSON.stringify(data));
+            setUser(data);
+        } catch (error) {
+            console.error(error);
+            showToast('Error', 'Error signing up', 'error');
+        }
+    };
 
     return (
         <div className="flex items-center justify-center relative overflow-hidden py-4">
@@ -51,32 +82,40 @@ const SignUpPage = () => {
                         <Input
                             icon={User}
                             type="text"
+                            placeholder="Username"
+                            onChange={e => setInputs({ ...inputs, username: e.target.value })}
+                            value={inputs.username}
+                        />
+                        <Input
+                            icon={User}
+                            type="text"
                             placeholder="Name"
-                            value={name}
-                            onChange={e => setName(e.target.value)}
+                            onChange={e => setInputs({ ...inputs, name: e.target.value })}
+                            value={inputs.name}
                         />
                         <Input
                             icon={Mail}
                             type="text"
                             placeholder="Email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
+                            onChange={e => setInputs({ ...inputs, email: e.target.value })}
+                            value={inputs.email}
                         />
                         <Input
                             icon={Lock}
                             type="password"
                             placeholder="Password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            onChange={e => setInputs({ ...inputs, password: e.target.value })}
+                            value={inputs.password}
                         />
                         {/* Password Strength Indicator */}
-                        <PasswordStrengthMeter password={password} criteria={criteria} />
+                        <PasswordStrengthMeter password={inputs.password} criteria={criteria} />
                         <button
                             className={`mt-5 w-full py-3 px-4 text-white 
 						font-bold rounded-lg shadow-lg transition duration-200
 						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
                             type="submit"
                             disabled={!isFormValid}
+                            onClick={handleSignup}
                         >
                             Sign Up
                         </button>
