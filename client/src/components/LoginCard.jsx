@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import Input from './Input';
-import { Mail, Lock, Loader } from 'lucide-react';
+import { User, Lock, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useColorMode } from '@chakra-ui/react';
 import { useTheme } from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
+import useShowToast from '../hooks/useShowToast';
+import userAtom from '../atoms/userAtom';
 
 const LoginPage = () => {
     const setAuthScreen = useSetRecoilState(authScreenAtom);
@@ -13,19 +15,52 @@ const LoginPage = () => {
     const { colorMode } = useColorMode();
     const theme = useTheme();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
+
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = e => {
+    const [inputs, setInputs] = useState({
+        username: '',
+        password: '',
+    });
+
+    useEffect(() => {
+        setIsFormValid(inputs.username && inputs.password);
+    }, [inputs.username, inputs.password]);
+
+    const showToast = useShowToast();
+
+    const setUser = useSetRecoilState(userAtom);
+
+    const handleForm = e => {
         e.preventDefault();
     };
 
-    const [isFormValid, setIsFormValid] = useState(false);
+    const handleLogin = async () => {
+        try {
+            setIsLoading(true);
+            const res = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inputs),
+            });
 
-    useEffect(() => {
-        setIsFormValid(email && password);
-    }, [email, password]);
+            setIsLoading(false);
+
+            const data = await res.json();
+            if (data.error) {
+                showToast('Error', data.error, 'error');
+                return;
+            }
+
+            localStorage.setItem('user-threads', JSON.stringify(data));
+            setUser(data);
+        } catch (error) {
+            showToast('Error', error, 'error');
+        }
+    };
 
     return (
         <div className="flex items-center justify-center relative overflow-hidden py-4">
@@ -37,20 +72,20 @@ const LoginPage = () => {
             >
                 <div className="p-8">
                     <h2 className="text-3xl font-bold mb-6 text-center">Welcome Back</h2>
-                    <form onSubmit={handleLogin}>
+                    <form onSubmit={handleForm}>
                         <Input
-                            icon={Mail}
+                            icon={User}
                             type="text"
-                            placeholder="Email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
+                            placeholder="Username"
+                            value={inputs.username}
+                            onChange={e => setInputs({ ...inputs, username: e.target.value })}
                         />
                         <Input
                             icon={Lock}
                             type="password"
                             placeholder="Password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            value={inputs.password}
+                            onChange={e => setInputs({ ...inputs, password: e.target.value })}
                         />
                         <div className="flex items-center justify-end mb-2">
                             <Link to="/forgot-password" className="text-sm text-gray-500 hover:underline">
@@ -63,8 +98,8 @@ const LoginPage = () => {
 						font-bold rounded-lg shadow-lg transition duration-200
 						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
                             type="submit"
-                            disabled={!isFormValid || isLoading}
-                            onClick={() => setIsLoading(true)}
+                            disabled={!isFormValid}
+                            onClick={handleLogin}
                         >
                             {isLoading ? <Loader className="w-6 h-6 animate-spin mx-auto" /> : 'Login'}
                         </button>
