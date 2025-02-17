@@ -55,7 +55,7 @@ const LoginPage = () => {
                 return;
             }
 
-            localStorage.setItem('user-threads', JSON.stringify(data));
+            localStorage.setItem('user-catalog', JSON.stringify(data));
             setUser(data);
         } catch (error) {
             showToast('Error', error, 'error');
