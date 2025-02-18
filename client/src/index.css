@@ -17,3 +17,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@theme {
+    --color-primary: #eb5b5b;
+    --color-secondary: #363d58;
+    --color-success: #7ed321;
+    --color-info: #01a3df;
+    --color-warning: #f18624;
+    --color-danger: #be4c46;
+    --color-light: #f2f2f2;
+    --color-dark: #2e2e25;
+}

@@ -30,7 +30,7 @@ POST http://localhost:3001/api/users/logout
 POST http://localhost:3001/api/users/follow/67a9e565c91abf0ff292207c
 
 ### User - Update
-POST http://localhost:3001/api/users/update/67a9e565c91abf0ff292207c
+PUT http://localhost:3001/api/users/update/67a9e565c91abf0ff292207c
 Content-Type: application/json
 
 {

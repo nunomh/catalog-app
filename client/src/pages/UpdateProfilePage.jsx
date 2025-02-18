@@ -1,6 +1,6 @@
 import { User, Mail, Lock } from 'lucide-react';
 import Input from '../components/Input';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 import { useColorMode, useTheme, Button, Stack, Avatar, Center } from '@chakra-ui/react';
@@ -40,18 +40,32 @@ const UpdateProfilePage = () => {
         { label: 'Contains special character', met: /[^A-Za-z0-9]/.test(inputs.password) },
     ];
 
-    const handleSubmit = e => {
-        e.preventDefault();
-    };
-
-    const [isFormValid, setIsFormValid] = useState(false);
-
-    useEffect(() => {
-        const isPasswordValid = criteria.every(criterion => criterion.met);
-        setIsFormValid(inputs.username && inputs.name && inputs.email && isPasswordValid);
-    }, [inputs.username, inputs.name, inputs.email, inputs.password]);
-
     const { handleImageChange, imgUrl } = usePreviewImg();
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch(`/api/users/update/${user._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
+            });
+            const data = await res.json();
+            if (data.error) {
+                showToast('Error', data.error, 'error');
+                return;
+            }
+
+            showToast('Success', 'Profile updated successfully', 'success');
+            setUser(data);
+            localStorage.setItem('user-catalog', JSON.stringify(data));
+        } catch (error) {
+            showToast('Error', error.message, 'error');
+        }
+    };
 
     return (
         <div className="flex items-center justify-center relative overflow-hidden py-4">
@@ -62,7 +76,7 @@ const UpdateProfilePage = () => {
                 }}
             >
                 <div className="p-8">
-                    <h2 className="text-3xl font-bold mb-6 text-center ">Create Account</h2>
+                    <h2 className="text-3xl font-bold mb-6 text-center">Update Profile</h2>
                     <form onSubmit={handleSubmit}>
                         <Stack direction={['column', 'row']} spacing={6} mb={6}>
                             <Center>
@@ -97,6 +111,13 @@ const UpdateProfilePage = () => {
                             value={inputs.email}
                         />
                         <Input
+                            icon={Mail}
+                            type="text"
+                            placeholder="Bio"
+                            onChange={e => setInputs({ ...inputs, bio: e.target.value })}
+                            value={inputs.bio}
+                        />
+                        <Input
                             icon={Lock}
                             type="password"
                             placeholder="Password"
@@ -108,9 +129,8 @@ const UpdateProfilePage = () => {
                         <button
                             className={`mt-5 w-full py-3 px-4 text-white 
 						font-bold rounded-lg shadow-lg transition duration-200
-						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
+						bg-blue-400 hover:bg-blue-500`}
                             type="submit"
-                            disabled={!isFormValid}
                         >
                             Sign Up
                         </button>
