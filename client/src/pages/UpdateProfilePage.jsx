@@ -5,17 +5,25 @@ import { Link } from 'react-router-dom';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 import { useColorMode, useTheme, Button, Stack, Avatar, Center } from '@chakra-ui/react';
 import {} from '@chakra-ui/react';
-import { useSetRecoilState } from 'recoil';
+import { useSetRecoilState, useRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
 import useShowToast from '../hooks/useShowToast';
 import userAtom from '../atoms/userAtom';
+import { useRef } from 'react';
+import usePreviewImg from '../hooks/usePreviewImg';
 
 const UpdateProfilePage = () => {
     const setAuthScreen = useSetRecoilState(authScreenAtom);
+
+    const [user, setUser] = useRecoilState(userAtom);
+
+    const fileRef = useRef(null);
+
     const [inputs, setInputs] = useState({
-        username: '',
-        name: '',
-        email: '',
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
         password: '',
     });
 
@@ -43,30 +51,7 @@ const UpdateProfilePage = () => {
         setIsFormValid(inputs.username && inputs.name && inputs.email && isPasswordValid);
     }, [inputs.username, inputs.name, inputs.email, inputs.password]);
 
-    const setUser = useSetRecoilState(userAtom);
-
-    const handleSignup = async () => {
-        try {
-            const res = await fetch('/api/users/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(inputs),
-            });
-            const data = await res.json();
-            if (data.error) {
-                showToast('Error', data.error, 'error');
-                return;
-            }
-
-            localStorage.setItem('user-catalog', JSON.stringify(data));
-            setUser(data);
-        } catch (error) {
-            console.error(error);
-            showToast('Error', 'Error signing up', 'error');
-        }
-    };
+    const { handleImageChange, imgUrl } = usePreviewImg();
 
     return (
         <div className="flex items-center justify-center relative overflow-hidden py-4">
@@ -81,10 +66,13 @@ const UpdateProfilePage = () => {
                     <form onSubmit={handleSubmit}>
                         <Stack direction={['column', 'row']} spacing={6} mb={6}>
                             <Center>
-                                <Avatar size="xl" src="https://bit.ly/sage-adebayo" />
+                                <Avatar size="xl" src={imgUrl || user.profilePic} />
                             </Center>
                             <Center w="full">
-                                <Button w="full">Change Icon</Button>
+                                <Button w="full" onClick={() => fileRef.current.click()}>
+                                    Change Icon
+                                </Button>
+                                <input type="file" hidden ref={fileRef} onChange={handleImageChange} />
                             </Center>
                         </Stack>
                         <Input
@@ -116,14 +104,13 @@ const UpdateProfilePage = () => {
                             value={inputs.password}
                         />
                         {/* Password Strength Indicator */}
-                        <PasswordStrengthMeter password={inputs.password} criteria={criteria} />
+                        {inputs.password && <PasswordStrengthMeter password={inputs.password} criteria={criteria} />}
                         <button
                             className={`mt-5 w-full py-3 px-4 text-white 
 						font-bold rounded-lg shadow-lg transition duration-200
 						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
                             type="submit"
                             disabled={!isFormValid}
-                            onClick={handleSignup}
                         >
                             Sign Up
                         </button>
