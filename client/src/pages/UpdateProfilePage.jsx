@@ -1,23 +1,21 @@
 import { User, Mail, Lock } from 'lucide-react';
 import Input from '../components/Input';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useRef } from 'react';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 import { useColorMode, useTheme, Button, Stack, Avatar, Center } from '@chakra-ui/react';
-import {} from '@chakra-ui/react';
-import { useSetRecoilState, useRecoilState } from 'recoil';
-import authScreenAtom from '../atoms/authAtom';
+import { useRecoilState } from 'recoil';
 import useShowToast from '../hooks/useShowToast';
 import userAtom from '../atoms/userAtom';
-import { useRef } from 'react';
 import usePreviewImg from '../hooks/usePreviewImg';
+import { updateProfile } from '../services/user/updateUser.service';
 
 const UpdateProfilePage = () => {
-    const setAuthScreen = useSetRecoilState(authScreenAtom);
-
     const [user, setUser] = useRecoilState(userAtom);
-
     const fileRef = useRef(null);
+    const showToast = useShowToast();
+    const { colorMode } = useColorMode();
+    const theme = useTheme();
+    const { handleImageChange, imgUrl } = usePreviewImg();
 
     const [inputs, setInputs] = useState({
         name: user.name,
@@ -27,11 +25,6 @@ const UpdateProfilePage = () => {
         password: '',
     });
 
-    const showToast = useShowToast();
-
-    const { colorMode } = useColorMode();
-    const theme = useTheme();
-
     const criteria = [
         { label: 'At least 6 characters', met: inputs.password.length >= 6 },
         { label: 'Contains uppercase letter', met: /[A-Z]/.test(inputs.password) },
@@ -40,30 +33,16 @@ const UpdateProfilePage = () => {
         { label: 'Contains special character', met: /[^A-Za-z0-9]/.test(inputs.password) },
     ];
 
-    const { handleImageChange, imgUrl } = usePreviewImg();
-
     const handleSubmit = async e => {
         e.preventDefault();
 
         try {
-            const res = await fetch(`/api/users/update/${user._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
-            });
-            const data = await res.json();
-            if (data.error) {
-                showToast('Error', data.error, 'error');
-                return;
-            }
-
+            const updatedUserData = await updateProfile(user._id, { ...inputs, profilePic: imgUrl });
             showToast('Success', 'Profile updated successfully', 'success');
-            setUser(data);
-            localStorage.setItem('user-catalog', JSON.stringify(data));
+            setUser(updatedUserData);
+            localStorage.setItem('user-catalog', JSON.stringify(updatedUserData));
         } catch (error) {
-            showToast('Error', error.message, 'error');
+            showToast('Error', error.message || 'Profile update failed', 'error');
         }
     };
 
@@ -84,7 +63,7 @@ const UpdateProfilePage = () => {
                             </Center>
                             <Center w="full">
                                 <Button w="full" onClick={() => fileRef.current.click()}>
-                                    Change Icon
+                                    Change Profile Picture
                                 </Button>
                                 <input type="file" hidden ref={fileRef} onChange={handleImageChange} />
                             </Center>
@@ -127,22 +106,12 @@ const UpdateProfilePage = () => {
                         {/* Password Strength Indicator */}
                         {inputs.password && <PasswordStrengthMeter password={inputs.password} criteria={criteria} />}
                         <button
-                            className={`mt-5 w-full py-3 px-4 text-white 
-						font-bold rounded-lg shadow-lg transition duration-200
-						bg-blue-400 hover:bg-blue-500`}
+                            className="mt-5 w-full py-3 px-4 text-white font-bold rounded-lg shadow-lg transition duration-200 bg-blue-400 hover:bg-blue-500"
                             type="submit"
                         >
-                            Sign Up
+                            Update
                         </button>
                     </form>
-                </div>
-                <div className="px-8 py-4 bg-blue-500 bg-opacity-50 flex justify-center">
-                    <p className="text-sm">
-                        Already have an account?{' '}
-                        <Link className=" hover:underline" onClick={() => setAuthScreen('login')}>
-                            <b>Login</b>
-                        </Link>
-                    </p>
                 </div>
             </div>
         </div>

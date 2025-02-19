@@ -31,6 +31,7 @@ const colors = {
 const theme = extendTheme({ config, styles, colors });
 
 createRoot(document.getElementById('root')).render(
+    // StrictMode is a tool for highlighting potential problems in an application, renders every component twice on development
     <StrictMode>
         <RecoilRoot>
             <ChakraProvider theme={theme}>

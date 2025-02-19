@@ -8,6 +8,7 @@ import { useSetRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
 import useShowToast from '../hooks/useShowToast';
 import userAtom from '../atoms/userAtom';
+import { loginUser } from '../services/auth/login.service';
 
 const LoginPage = () => {
     const setAuthScreen = useSetRecoilState(authScreenAtom);
@@ -32,33 +33,21 @@ const LoginPage = () => {
 
     const setUser = useSetRecoilState(userAtom);
 
-    const handleForm = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
-    };
 
-    const handleLogin = async () => {
+        if (!isFormValid) return;
+
         try {
             setIsLoading(true);
-            const res = await fetch('/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(inputs),
-            });
-
-            setIsLoading(false);
-
-            const data = await res.json();
-            if (data.error) {
-                showToast('Error', data.error, 'error');
-                return;
-            }
-
-            localStorage.setItem('user-catalog', JSON.stringify(data));
-            setUser(data);
+            const userData = await loginUser(inputs);
+            localStorage.setItem('user-catalog', JSON.stringify(userData));
+            setUser(userData);
+            showToast('Success', 'Login successful!', 'success');
         } catch (error) {
-            showToast('Error', error, 'error');
+            showToast('Error', error.message || 'Login failed', 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -72,7 +61,7 @@ const LoginPage = () => {
             >
                 <div className="p-8">
                     <h2 className="text-3xl font-bold mb-6 text-center">Welcome Back</h2>
-                    <form onSubmit={handleForm}>
+                    <form onSubmit={handleSubmit}>
                         <Input
                             icon={User}
                             type="text"
@@ -99,7 +88,6 @@ const LoginPage = () => {
 						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
                             type="submit"
                             disabled={!isFormValid}
-                            onClick={handleLogin}
                         >
                             {isLoading ? <Loader className="w-6 h-6 animate-spin mx-auto" /> : 'Login'}
                         </button>

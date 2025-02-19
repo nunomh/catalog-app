@@ -9,6 +9,7 @@ import { useSetRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
 import useShowToast from '../hooks/useShowToast';
 import userAtom from '../atoms/userAtom';
+import { signupUser } from '../services/auth/signup.service';
 
 const SignUpPage = () => {
     const setAuthScreen = useSetRecoilState(authScreenAtom);
@@ -32,10 +33,6 @@ const SignUpPage = () => {
         { label: 'Contains special character', met: /[^A-Za-z0-9]/.test(inputs.password) },
     ];
 
-    const handleSubmit = e => {
-        e.preventDefault();
-    };
-
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
@@ -45,26 +42,18 @@ const SignUpPage = () => {
 
     const setUser = useSetRecoilState(userAtom);
 
-    const handleSignup = async () => {
-        try {
-            const res = await fetch('/api/users/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(inputs),
-            });
-            const data = await res.json();
-            if (data.error) {
-                showToast('Error', data.error, 'error');
-                return;
-            }
+    const handleSubmit = async e => {
+        e.preventDefault();
 
-            localStorage.setItem('user-catalog', JSON.stringify(data));
-            setUser(data);
+        if (!isFormValid) return;
+
+        try {
+            const userData = await signupUser(inputs);
+            localStorage.setItem('user-data', JSON.stringify(userData));
+            setUser(userData);
+            showToast('Success', 'Account created successfully', 'success');
         } catch (error) {
-            console.error(error);
-            showToast('Error', 'Error signing up', 'error');
+            showToast('Error', error.message, 'error');
         }
     };
 
@@ -115,7 +104,6 @@ const SignUpPage = () => {
 						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
                             type="submit"
                             disabled={!isFormValid}
-                            onClick={handleSignup}
                         >
                             Sign Up
                         </button>

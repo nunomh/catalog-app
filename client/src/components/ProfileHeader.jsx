@@ -16,7 +16,7 @@ import {
 import { BsInstagram } from 'react-icons/bs';
 import { CgMoreO } from 'react-icons/cg';
 
-const ProfileHeader = () => {
+const ProfileHeader = ({ user }) => {
     const toast = useToast();
     const copyUrl = () => {
         const currentURL = window.location.href;
@@ -33,31 +33,43 @@ const ProfileHeader = () => {
             <Flex justifyContent={'space-between'} w={'full'}>
                 <Box>
                     <Text fontSize={'2xl'} fontWeight={'bold'}>
-                        Hylianthrone 🕹️
+                        {user.name}
                     </Text>
                     <Flex gap={2} alignItems={'center'}>
                         <Text fontSize={'sm'} bg={'gray.dark'} color={'gray.light'} p={1} borderRadius={'full'}>
-                            @hylianthrone
+                            @{user.username}
                         </Text>
                         <Text fontSize={'sm'}>·</Text>
-                        <Text fontSize={'sm'}>2 followers</Text>
+                        <Text fontSize={'sm'}>{user.followers.length} followers</Text>
                     </Flex>
                     <Box mt={3}>
-                        <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</Text>
-                        <Link color={'gray.light'} href="https://instagram.com/hylianthrone" target="_blank">
-                            instagram.com/hylianthrone
+                        <Text>{user.bio}</Text>
+                        <Link color={'gray.light'} href="https://instagram.com/todo" target="_blank">
+                            instagram.com/todo
                         </Link>
                     </Box>
                 </Box>
                 <Box>
-                    <Avatar
-                        name="hylianthrone"
-                        src="/hylianthrone.png"
-                        size={{
-                            base: 'md',
-                            md: 'xl',
-                        }}
-                    />
+                    {user.profilePic && (
+                        <Avatar
+                            name={user.name}
+                            src={user.profilePic}
+                            size={{
+                                base: 'md',
+                                md: 'xl',
+                            }}
+                        />
+                    )}
+                    {!user.profilePic && (
+                        <Avatar
+                            name={user.name}
+                            src="https://bit.ly/broken-link"
+                            size={{
+                                base: 'md',
+                                md: 'xl',
+                            }}
+                        />
+                    )}
                 </Box>
             </Flex>
 
