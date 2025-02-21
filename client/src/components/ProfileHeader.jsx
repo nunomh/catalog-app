@@ -44,6 +44,7 @@ const ProfileHeader = ({ user }) => {
             showToast('Error', 'You must be logged in to follow users', 'error');
             return;
         }
+        if (updating) return;
         setUpdating(true);
         try {
             const res = await fetch(`/api/users/follow/${user._id}`, {

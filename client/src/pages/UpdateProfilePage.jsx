@@ -1,4 +1,4 @@
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, Loader } from 'lucide-react';
 import Input from '../components/Input';
 import { useState, useRef } from 'react';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
@@ -11,6 +11,7 @@ import { updateProfile } from '../services/user/updateUser.service';
 
 const UpdateProfilePage = () => {
     const [user, setUser] = useRecoilState(userAtom);
+    const [updating, setUpdating] = useState(false);
     const fileRef = useRef(null);
     const showToast = useShowToast();
     const { colorMode } = useColorMode();
@@ -36,6 +37,9 @@ const UpdateProfilePage = () => {
     const handleSubmit = async e => {
         e.preventDefault();
 
+        if (updating) return;
+        setUpdating(true);
+
         try {
             const updatedUserData = await updateProfile(user._id, { ...inputs, profilePic: imgUrl });
             showToast('Success', 'Profile updated successfully', 'success');
@@ -43,6 +47,8 @@ const UpdateProfilePage = () => {
             localStorage.setItem('user-catalog', JSON.stringify(updatedUserData));
         } catch (error) {
             showToast('Error', error.message || 'Profile update failed', 'error');
+        } finally {
+            setUpdating(false);
         }
     };
 
@@ -109,7 +115,7 @@ const UpdateProfilePage = () => {
                             className="mt-5 w-full py-3 px-4 text-white font-bold rounded-lg shadow-lg transition duration-200 bg-blue-400 hover:bg-blue-500"
                             type="submit"
                         >
-                            Update
+                            {updating ? <Loader className="w-6 h-6 animate-spin mx-auto" /> : 'Update'}
                         </button>
                     </form>
                 </div>
