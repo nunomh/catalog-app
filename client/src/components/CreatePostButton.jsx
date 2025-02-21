@@ -30,15 +30,12 @@ const MAX_CHAR = 500;
 const CreatePostButton = () => {
     const user = useRecoilValue(userAtom);
     const showToast = useShowToast();
-
     const { isOpen, onOpen, onClose } = useDisclosure();
-
     const [postText, setPostText] = useState('');
-
     const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
     const imageRef = useRef(null);
-
     const [reaimingCharacters, setReaimingCharacters] = useState(MAX_CHAR);
+    const [loading, setLoading] = useState(false);
 
     const handleTextChange = event => {
         const inputText = event.target.value;
@@ -54,28 +51,43 @@ const CreatePostButton = () => {
     };
 
     const handleCreatePost = async () => {
-        const res = await fetch('/api/posts/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                postedBy: user._id,
-                text: postText,
-                img: imgUrl,
-            }),
-        });
+        setLoading(true);
+        try {
+            const res = await fetch('/api/posts/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    postedBy: user._id,
+                    text: postText,
+                    img: imgUrl,
+                }),
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (data.error) {
-            showToast('Error', data.error, 'error');
-            return;
+            if (data.error) {
+                showToast('Error', data.error, 'error');
+                return;
+            }
+
+            showToast('Success', 'Post created successfully', 'success');
+
+            onClose();
+            setPostText('');
+            setImgUrl('');
+        } catch (error) {
+            showToast('Error', error, 'error');
+        } finally {
+            setLoading(false);
         }
+    };
 
-        showToast('Success', 'Post created successfully', 'success');
-
+    const cleanAndClose = () => {
         onClose();
+        setPostText('');
+        setImgUrl('');
     };
 
     return (
@@ -91,7 +103,7 @@ const CreatePostButton = () => {
                 Post
             </Button>
 
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={cleanAndClose}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>Create Post</ModalHeader>
@@ -127,10 +139,10 @@ const CreatePostButton = () => {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={onClose}>
+                        {/* <Button colorScheme="blue" mr={3} onClick={onClose}>
                             Close
-                        </Button>
-                        <Button colorScheme="blue" mr={3} onClick={handleCreatePost}>
+                        </Button> */}
+                        <Button colorScheme="blue" mr={3} onClick={handleCreatePost} isLoading={loading}>
                             Post
                         </Button>
                     </ModalFooter>
