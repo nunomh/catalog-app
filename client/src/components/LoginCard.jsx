@@ -3,7 +3,7 @@ import Input from './Input';
 import { User, Lock, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useColorMode } from '@chakra-ui/react';
-import { useTheme } from '@chakra-ui/react';
+import { useTheme, Button } from '@chakra-ui/react';
 import { useSetRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
 import useShowToast from '../hooks/useShowToast';
@@ -82,18 +82,21 @@ const LoginPage = () => {
                             </Link>
                         </div>
 
-                        <button
-                            className={`mt-5 w-full py-3 px-4 text-white 
-						font-bold rounded-lg shadow-lg transition duration-200
-						${isFormValid ? 'bg-blue-400 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
+                        <Button
+                            mt={5}
+                            w="full"
                             type="submit"
-                            disabled={!isFormValid}
+                            isLoading={isLoading}
+                            loadingText="Logging in..."
+                            isDisabled={!isFormValid}
+                            colorScheme="blue"
+                            variant="solid"
                         >
-                            {isLoading ? <Loader className="w-6 h-6 animate-spin mx-auto" /> : 'Login'}
-                        </button>
+                            Login
+                        </Button>
                     </form>
                 </div>
-                <div className="px-8 py-4 bg-blue-500 bg-opacity-50 flex justify-center">
+                <div className="px-8 py-4 bg-blue-400 bg-opacity-50 flex justify-center">
                     <p className="text-sm">
                         Don&apos;t have an account?{' '}
                         <Link className=" hover:underline" onClick={() => setAuthScreen('signup')}>
