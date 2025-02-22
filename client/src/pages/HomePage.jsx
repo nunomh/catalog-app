@@ -1,7 +1,7 @@
-import { Button, Flex, Spinner } from '@chakra-ui/react';
+import { Flex, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import useShowToast from '../hooks/useShowToast';
+import Post from '../components/Post';
 
 const HomePage = () => {
     const [posts, setPosts] = useState([]);
@@ -37,6 +37,10 @@ const HomePage = () => {
                 </Flex>
             )}
             {!loading && posts.length === 0 && <h1>Follow some users to see their posts</h1>}
+
+            {posts.map(post => (
+                <Post key={post._id} post={post} postedBy={post.postedBy} />
+            ))}
         </>
     );
 };
