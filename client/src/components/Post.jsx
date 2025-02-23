@@ -1,13 +1,17 @@
 import { Avatar, Flex, Box, Text, Image } from '@chakra-ui/react';
 import { BsThreeDots } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PostActions from './PostActions';
 import { useEffect, useState } from 'react';
 import useShowToast from '../hooks/useShowToast';
+import { formatDistanceToNow } from 'date-fns';
 
 const Post = ({ post, postedBy }) => {
     const [liked, setLiked] = useState(false);
+    const [user, setUser] = useState(null);
     const showToast = useShowToast();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getUser = async () => {
@@ -18,31 +22,49 @@ const Post = ({ post, postedBy }) => {
                     showToast('Error', data.error, 'error');
                     return;
                 }
-                console.log(data);
+                setUser(data);
             } catch (error) {
                 showToast('Error', error.message, 'error');
+                setUser(null);
             }
         };
 
         getUser();
     }, [postedBy, showToast]);
 
+    if (!user) return null;
+
     return (
-        <Link to="/user/someusername/post/1">
+        <Link to={`/${user.username}/post/${post._id}`}>
             <Flex gap={3} mb={4} py={5}>
                 <Flex flexDirection={'column'} alignItems={'center'}>
-                    <Avatar size={'md'} name="someusername" src="/someusername.png" />
+                    <Avatar
+                        size={'md'}
+                        name={user.username}
+                        src={user.profilePic}
+                        onClick={e => {
+                            e.preventDefault();
+                            navigate(`/${user.username}`);
+                        }}
+                    />
                 </Flex>
                 <Flex flex={1} flexDirection={'column'} gap={2}>
                     <Flex justifyContent={'space-between'} w={'full'}>
                         <Flex w={'full'} alignItems={'center'}>
-                            <Text fontSize={'sm'} fontWeight={'bold'}>
-                                someusername
+                            <Text
+                                fontSize={'sm'}
+                                fontWeight={'bold'}
+                                onClick={e => {
+                                    e.preventDefault();
+                                    navigate(`/${user.username}`);
+                                }}
+                            >
+                                {user.username}
                             </Text>
                         </Flex>
                         <Flex gap={4} alignItems={'center'}>
-                            <Text fontStyle={'sm'} color={'gray.light'}>
-                                1d
+                            <Text fontSize={'xs'} width={36} textAlign={'right'} color={'gray.light'}>
+                                {formatDistanceToNow(new Date(post.createdAt))} ago
                             </Text>
                             <BsThreeDots />
                         </Flex>
