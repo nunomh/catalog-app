@@ -7,7 +7,6 @@ import useShowToast from '../hooks/useShowToast';
 import { formatDistanceToNow } from 'date-fns';
 
 const Post = ({ post, postedBy }) => {
-    const [liked, setLiked] = useState(false);
     const [user, setUser] = useState(null);
     const showToast = useShowToast();
 
@@ -30,7 +29,7 @@ const Post = ({ post, postedBy }) => {
         };
 
         getUser();
-    }, [postedBy, showToast]);
+    }, [postedBy]);
 
     if (!user) return null;
 
@@ -78,17 +77,7 @@ const Post = ({ post, postedBy }) => {
                     )}
 
                     <Flex gap={3} my={1}>
-                        <PostActions liked={liked} setLiked={setLiked} />
-                    </Flex>
-
-                    <Flex gap={2} alignItems={'center'}>
-                        <Text color={'gray.light'} fontSize="sm">
-                            {post.replies.length} replies
-                        </Text>
-                        <Box w={0.5} h={0.5} borderRadius={'full'} bg={'gray.light'}></Box>
-                        <Text color={'gray.light'} fontSize="sm">
-                            {post.likes.length} likes
-                        </Text>
+                        <PostActions post={post} />
                     </Flex>
                 </Flex>
             </Flex>
