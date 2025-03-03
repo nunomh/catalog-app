@@ -1,11 +1,20 @@
 import { Avatar, Flex, Img, Text, Box, Image, Divider } from '@chakra-ui/react';
 import { BsThreeDots } from 'react-icons/bs';
 import PostActions from '../components/PostActions';
-import { useState } from 'react';
 import Comment from '../components/Comment';
+import useGetUserProfile from '../hooks/useGetUserProfile';
 
 const PostPage = () => {
-    const [liked, setLiked] = useState(false);
+    const { loading, user } = useGetUserProfile();
+
+    if (!user && loading) {
+        return (
+            <Flex justifyContent={'center'}>
+                <Spinner size={'xl'} />
+            </Flex>
+        );
+    }
+
     return (
         <>
             <Flex>
@@ -30,7 +39,7 @@ const PostPage = () => {
                 <Image src={'/post1.png'} w={'full'} />
             </Box>
             <Flex gap={3} my={3}>
-                <PostActions liked={liked} setLiked={setLiked} />
+                <PostActions post={post} />
             </Flex>
             <Flex gap={2} alignItems={'center'}>
                 <Text color={'gray.light'} fontSize={'sm'}>
@@ -38,7 +47,7 @@ const PostPage = () => {
                 </Text>
                 <Box w={0.5} h={0.5} borderRadius={'full'} bg={'gray.light'}></Box>
                 <Text color={'gray.light'} fontSize={'sm'}>
-                    {200 + (liked ? 1 : 0)} likes
+                    {200} likes
                 </Text>
             </Flex>
 

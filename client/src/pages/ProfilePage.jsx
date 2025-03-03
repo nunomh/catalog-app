@@ -2,26 +2,20 @@ import ProfileHeader from '../components/ProfileHeader';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useShowToastWithCallback from '../hooks/useShowToastWithCallback';
-import { fetchUser } from '../services/user/fetchUser.service';
+// import { fetchUser } from '../services/user/fetchUser.service';
 import { Flex, Spinner } from '@chakra-ui/react';
 import Post from '../components/Post';
+import useGetUserProfile from '../hooks/useGetUserProfile';
 
 const ProfilePage = () => {
-    const [user, setUser] = useState(null);
+    const { loading, user } = useGetUserProfile();
+
     const { username } = useParams();
     const showToast = useShowToastWithCallback();
-    const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState([]);
     const [loadingPosts, setLoadingPosts] = useState(true);
 
     useEffect(() => {
-        const getUser = async () => {
-            const userData = await fetchUser(username, showToast);
-            if (userData) setUser(userData);
-            setLoading(false);
-        };
-        getUser();
-
         const getPosts = async () => {
             setLoadingPosts(true);
             try {
