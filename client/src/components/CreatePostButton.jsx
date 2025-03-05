@@ -39,8 +39,7 @@ const CreatePostButton = () => {
     const [reaimingCharacters, setReaimingCharacters] = useState(MAX_CHAR);
     const [loading, setLoading] = useState(false);
     const [posts, setPosts] = useRecoilState(postsAtom);
-    const { username: routeUsername } = useParams() ?? {};
-    const username = routeUsername ?? user.username;
+    const { username } = useParams();
 
     const handleTextChange = event => {
         const inputText = event.target.value;

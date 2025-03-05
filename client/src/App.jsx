@@ -21,7 +21,19 @@ function App() {
 
                 <Route path="/update" element={user ? <UpdateProfilePage /> : <Navigate to="/" />} />
 
-                <Route path="/:username" element={<ProfilePage />} />
+                <Route
+                    path="/:username"
+                    element={
+                        user ? (
+                            <>
+                                <ProfilePage />
+                                <CreatePostButton />
+                            </>
+                        ) : (
+                            <ProfilePage />
+                        )
+                    }
+                />
                 <Route path="/:username/post/:pid" element={<PostPage />} />
             </Route>
         )
@@ -31,7 +43,7 @@ function App() {
         <Container maxW="820px">
             <RouterProvider router={router} />
             {/* {user && <LogoutButton />} */}
-            {user && <CreatePostButton />}
+            {/* {user && <CreatePostButton />} */}
         </Container>
     );
 }
