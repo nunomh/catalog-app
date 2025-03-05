@@ -7,7 +7,7 @@ import PostPage from './pages/PostPage';
 import AuthPage from './pages/AuthPage';
 import { useRecoilValue } from 'recoil';
 import userAtom from './atoms/userAtom';
-import LogoutButton from './components/LogoutButton';
+// import LogoutButton from './components/LogoutButton';
 import UpdateProfilePage from './pages/UpdateProfilePage';
 import CreatePostButton from './components/CreatePostButton';
 
@@ -30,7 +30,7 @@ function App() {
     return (
         <Container maxW="820px">
             <RouterProvider router={router} />
-            {user && <LogoutButton />}
+            {/* {user && <LogoutButton />} */}
             {user && <CreatePostButton />}
         </Container>
     );
