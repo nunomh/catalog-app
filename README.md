@@ -25,3 +25,9 @@ npm run dev
     -   cookie-parser
     -   nodemon (dev)
 -   MongoDB
+
+#### Run
+
+```bash
+nodemon
+```
